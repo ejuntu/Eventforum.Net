@@ -1,0 +1,122 @@
+ContextMap EventForum.NET {
+	contains ForumContext
+	contains UserContext
+	
+	ForumContext [D] <- [U, OHS] UserContext {
+		implementationTechnology = "EventBus" 
+	}
+	
+}
+
+BoundedContext ForumContext implements ForumDomain {
+	domainVisionStatement "This Bounded Context manages the Chat Forum content"
+    responsibilities ="Message management"
+
+	Aggregate Messaging {
+		Entity Forum {
+			aggregateRoot
+			- String ForumId 
+			- String ForumName
+			- List<Message> Messages
+		}
+
+		Entity Message {
+			- String MessageId
+			- String MessageText
+			- String ForumId
+			- String UserId
+
+			Repository MessageRepository {
+               save publish MessageCreatedEvent to MessageChannel; 
+			   update publish MessageUpdatedEvent to MessageChannel;
+            }   
+		}
+
+		Service MessageService {
+			String Add (@Message message); //Returns message Id GUID as string
+			@Message Update (@Message message);
+		}
+
+		DomainEvent MessageEvent {
+			- DateTime CreateDate
+			- String EventId
+			- @Message message
+		}
+
+		Service MessageEventService {
+			@MessageEvent MessageAdded(@Message)
+				publish to MessageChannel;
+			@MessageEvent MessageUpdated(@Message)
+				publish to MessageChannel;
+		}
+	}
+
+	Aggregate ForumUsers {
+		Entity ForumUser {
+			aggregateRoot
+			- String UserId
+			- String Nickname
+			- Boolean active
+		}
+
+		Service UserEventReceivingService {
+			subscribe to UserChannel
+			@UserEvent UserCreatedEvent(@User user);
+			@UserEvent UserAddedEvent(@User user);
+		}
+	}
+}
+
+BoundedContext UserManagementContext implements UserDomain {
+	domainVisionStatement "This Bounded Context manages the user information"
+	responsibilities ="User adding and updating"
+
+	Aggregate SystemUser {
+		Entity User {
+			aggregateRoot
+			- String UserId
+			- String FirstName
+			- String LastName
+			- String Nickname
+			- Boolean active
+
+			Repository UserRepository {
+               save publish UserCreatedEvent to UserChannel; 
+            }   
+		}
+
+	DomainEvent UserEvent {
+		- DateTime CreateDate
+		- String Id
+		- @User user
+	}
+
+	Service UserService {
+		String AddUser(@User user) //Returns user Id GUID as String
+		@User UpdateUser(@User user)
+	}
+
+	Service UserEventService {
+		@UserEvent UserCreatedEvent(@User user) 
+			publish to UserChannel;
+		
+		@UserEvent UserUpdatedEvent (@User user) 
+			publish to UserChannel;
+		}
+	}
+	}
+
+}
+
+/* Domain & Subdomain Definitions */
+Domain EventForumDomain {
+	 Subdomain ForumDomain {
+        type=CORE_DOMAIN
+        domainVisionStatement="Subdomain managing forum messages"
+    }
+
+	Subdomain UserDomain {
+		type=SUPPORTING_DOMAIN
+		domainVisionStatement="Subdomain managing users"
+	}
+}
