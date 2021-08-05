@@ -1,64 +1,55 @@
-ContextMap EventForum.NET {
+ContextMap EventForumNET {
 	contains ForumContext
-	contains UserContext
-	
-	ForumContext [D] <- [U, OHS] UserContext {
-		implementationTechnology = "EventBus" 
+	contains UserManagementContext
+
+	ForumContext [D] <- [U, OHS] UserManagementContext {
+		implementationTechnology = "EventBus"
 	}
-	
 }
 
 BoundedContext ForumContext implements ForumDomain {
 	domainVisionStatement "This Bounded Context manages the Chat Forum content"
-    responsibilities ="Message management"
-
+	responsibilities ="Message management"
 	Aggregate Messaging {
 		Entity Forum {
 			aggregateRoot
-			- String ForumId 
-			- String ForumName
-			- List<Message> Messages
-		}
-
-		Entity Message {
-			- String MessageId
-			- String MessageText
-			- String ForumId
-			- String UserId
-
+			String forumId
+			String forumName
+			List<message> messages
 			Repository MessageRepository {
-               save publish MessageCreatedEvent to MessageChannel; 
-			   update publish MessageUpdatedEvent to MessageChannel;
-            }   
+	               addMessage publish MessageEvent to MessageChannel; 
+				   updateMessage publish MessageEvent to MessageChannel;
+	}
 		}
-
-		Service MessageService {
-			String Add (@Message message); //Returns message Id GUID as string
-			@Message Update (@Message message);
+		Entity Message {
+			String messageId
+			String messageText
+			String forumId
+			String userId
 		}
-
 		DomainEvent MessageEvent {
-			- DateTime CreateDate
-			- String EventId
+			DateTime createDate
+			String eventId
 			- @Message message
 		}
-
+		Service MessageService {
+			String Add (@Message message); // Returns message Id GUID as string
+			@Message Update (@Message message);
+		}
 		Service MessageEventService {
-			@MessageEvent MessageAdded(@Message)
+			@MessageEvent MessageAdded(@Message message)
 				publish to MessageChannel;
-			@MessageEvent MessageUpdated(@Message)
+			@MessageEvent MessageUpdated(@Message message)
 				publish to MessageChannel;
 		}
 	}
-
 	Aggregate ForumUsers {
 		Entity ForumUser {
 			aggregateRoot
-			- String UserId
-			- String Nickname
-			- Boolean active
+				String userId
+				String nickname
+				Boolean active
 		}
-
 		Service UserEventReceivingService {
 			subscribe to UserChannel
 			@UserEvent UserCreatedEvent(@User user);
@@ -70,53 +61,47 @@ BoundedContext ForumContext implements ForumDomain {
 BoundedContext UserManagementContext implements UserDomain {
 	domainVisionStatement "This Bounded Context manages the user information"
 	responsibilities ="User adding and updating"
-
 	Aggregate SystemUser {
 		Entity User {
 			aggregateRoot
-			- String UserId
-			- String FirstName
-			- String LastName
-			- String Nickname
-			- Boolean active
-
+			String userId
+			String firstName
+			String lastName
+			String nickname
+			Boolean active
 			Repository UserRepository {
-               save publish UserCreatedEvent to UserChannel; 
-            }   
+               save publish UserEvent to UserChannel; 
+            }
 		}
-
-	DomainEvent UserEvent {
-		- DateTime CreateDate
-		- String Id
-		- @User user
-	}
-
-	Service UserService {
-		String AddUser(@User user) //Returns user Id GUID as String
-		@User UpdateUser(@User user)
-	}
-
-	Service UserEventService {
-		@UserEvent UserCreatedEvent(@User user) 
+		DomainEvent UserEvent {
+			DateTime createDate
+			String id
+			- @User user
+		}
+		Service UserService {
+			String AddUser(@User user); // Returns user Id GUID as String
+			@User updateUser(@User user);
+		}
+		Service UserEventService {
+			@UserEvent UserCreatedEvent(@User user) 
 			publish to UserChannel;
-		
-		@UserEvent UserUpdatedEvent (@User user) 
+			@UserEvent UserUpdatedEvent (@User user) 
 			publish to UserChannel;
 		}
 	}
-	}
-
 }
 
 /* Domain & Subdomain Definitions */
 Domain EventForumDomain {
-	 Subdomain ForumDomain {
-        type=CORE_DOMAIN
-        domainVisionStatement="Subdomain managing forum messages"
-    }
+	Subdomain ForumDomain {
+		type=CORE_DOMAIN
+		domainVisionStatement="Subdomain managing forum messages"
+	}
 
 	Subdomain UserDomain {
 		type=SUPPORTING_DOMAIN
 		domainVisionStatement="Subdomain managing users"
 	}
+
 }
+

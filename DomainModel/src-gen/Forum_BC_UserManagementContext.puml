@@ -1,0 +1,36 @@
+@startuml
+
+skinparam componentStyle uml2
+
+package "'SystemUser' Aggregate" <<Rectangle>> {
+	class User <<(A,#fffab8) Aggregate Root>> {
+		String userId
+		String firstName
+		String lastName
+		String nickname
+		Boolean active
+	}
+	class UserEvent <<(E,#ff9f4b) Domain Event>> {
+		DateTime createDate
+		String id
+		User user
+	}
+	class UserService <<(S,DarkSeaGreen) Service>> {
+		String AddUser(User user)
+		User updateUser(User user)
+	}
+	class UserEventService <<(S,DarkSeaGreen) Service>> {
+		UserEvent UserCreatedEvent(User user)
+		UserEvent UserUpdatedEvent(User user)
+	}
+}
+UserEvent --> User : user
+UserService --> User : AddUser
+UserEventService --> UserEvent : UserCreatedEvent
+UserEventService --> User : UserCreatedEvent
+legend left
+  This bounded context implements the subdomain 'UserDomain'.
+end legend
+
+
+@enduml

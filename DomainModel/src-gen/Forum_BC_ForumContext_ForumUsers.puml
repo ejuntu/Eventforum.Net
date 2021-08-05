@@ -1,0 +1,18 @@
+@startuml
+
+skinparam componentStyle uml2
+
+package "'ForumUsers' Aggregate" <<Rectangle>> {
+	class ForumUser <<(A,#fffab8) Aggregate Root>> {
+		String userId
+		String nickname
+		Boolean active
+	}
+	class UserEventReceivingService <<(S,DarkSeaGreen) Service>> {
+		UserEvent UserCreatedEvent(User user)
+		UserEvent UserAddedEvent(User user)
+	}
+}
+
+
+@enduml

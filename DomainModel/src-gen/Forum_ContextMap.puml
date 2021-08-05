@@ -1,0 +1,22 @@
+@startuml ForumContextMap
+
+skinparam componentStyle uml2
+
+component [ForumContext]
+note right of [ForumContext]
+This Bounded Context manages the 
+Chat Forum content 
+end note
+component [UserManagementContext]
+note right of [UserManagementContext]
+This Bounded Context manages the 
+user information 
+end note
+
+interface "EventBus" as ForumContext_to_UserManagementContext
+[UserManagementContext] --> ForumContext_to_UserManagementContext : OPEN_HOST_SERVICE
+ForumContext_to_UserManagementContext <.. [ForumContext] : consume
+
+
+
+@enduml

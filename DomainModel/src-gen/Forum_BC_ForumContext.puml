@@ -1,0 +1,51 @@
+@startuml
+
+skinparam componentStyle uml2
+
+package "'Messaging' Aggregate" <<Rectangle>> {
+	class Forum <<(A,#fffab8) Aggregate Root>> {
+		String forumId
+		String forumName
+		List<message> messages
+	}
+	class Message <<(E,DarkSeaGreen) Entity>> {
+		String messageId
+		String messageText
+		String forumId
+		String userId
+	}
+	class MessageEvent <<(E,#ff9f4b) Domain Event>> {
+		DateTime createDate
+		String eventId
+		Message message
+	}
+	class MessageService <<(S,DarkSeaGreen) Service>> {
+		String Add(Message message)
+		Message Update(Message message)
+	}
+	class MessageEventService <<(S,DarkSeaGreen) Service>> {
+		MessageEvent MessageAdded(Message message)
+		MessageEvent MessageUpdated(Message message)
+	}
+}
+package "'ForumUsers' Aggregate" <<Rectangle>> {
+	class ForumUser <<(A,#fffab8) Aggregate Root>> {
+		String userId
+		String nickname
+		Boolean active
+	}
+	class UserEventReceivingService <<(S,DarkSeaGreen) Service>> {
+		UserEvent UserCreatedEvent(User user)
+		UserEvent UserAddedEvent(User user)
+	}
+}
+MessageEvent --> Message : message
+MessageService --> Message : Add
+MessageEventService --> MessageEvent : MessageAdded
+MessageEventService --> Message : MessageAdded
+legend left
+  This bounded context implements the subdomain 'ForumDomain'.
+end legend
+
+
+@enduml
