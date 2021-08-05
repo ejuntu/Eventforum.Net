@@ -17,8 +17,10 @@ BoundedContext ForumContext implements ForumDomain {
 			String forumName
 			List<message> messages
 			Repository MessageRepository {
-	               addMessage publish MessageEvent to MessageChannel; 
-				   updateMessage publish MessageEvent to MessageChannel;
+				findByQuery;
+	            save publish MessageEvent to MessageChannel; 
+				findAll;
+
 	}
 		}
 		Entity Message {
@@ -28,7 +30,7 @@ BoundedContext ForumContext implements ForumDomain {
 			String userId
 		}
 		DomainEvent MessageEvent {
-			DateTime createDate
+			Date createDate
 			String eventId
 			- @Message message
 		}
@@ -50,10 +52,12 @@ BoundedContext ForumContext implements ForumDomain {
 				String nickname
 				Boolean active
 		}
+		
 		Service UserEventReceivingService {
 			subscribe to UserChannel
-			@UserEvent UserCreatedEvent(@User user);
-			@UserEvent UserAddedEvent(@User user);
+			@UserDTO UserCreatedEvent();
+			@UserDTO UserAddedEvent();
+			reset;
 		}
 	}
 }
@@ -70,14 +74,24 @@ BoundedContext UserManagementContext implements UserDomain {
 			String nickname
 			Boolean active
 			Repository UserRepository {
-               save publish UserEvent to UserChannel; 
+				findById;
+	            save; 
+	            findAll;
             }
 		}
-		DomainEvent UserEvent {
-			DateTime createDate
-			String id
-			- @User user
+		
+		DataTransferObject UserDTO {
+			String userId
+			String nickname
+			boolean active
 		}
+		
+		DomainEvent UserEvent {
+			Date createDate
+			String id
+			- @UserDTO user
+		}
+		
 		Service UserService {
 			String AddUser(@User user); // Returns user Id GUID as String
 			@User updateUser(@User user);

@@ -1,0 +1,40 @@
+// Generated from DDD Context Map 'null' at 05.08.2021 14:41:40 EEST.
+API description UserManagementContextAPI
+
+
+data type DateTime P // the type DateTime has not been specified or does not contain any attributes in CML
+data type User { "userId":D<string>, "firstName":D<string>, "lastName":D<string>, "nickname":D<string>, "active":D<bool> }
+data type UserEvent { "createDate":DateTime, "id":D<string>, "user":User }
+
+
+endpoint type SystemUser
+	exposes
+		operation AddUser
+			expecting
+				payload User
+			delivering
+				payload D<string>
+		operation updateUser
+			expecting
+				payload User
+			delivering
+				payload User
+		operation UserCreatedEvent
+			expecting
+				payload User
+			delivering
+				payload UserEvent
+		operation UserUpdatedEvent
+			expecting
+				payload User
+			delivering
+				payload UserEvent
+
+
+API provider UserManagementContextProvider
+	// This Bounded Context manages the user information
+	offers SystemUser
+	at endpoint location "http://localhost:8000"
+		via protocol "tbd" // The protocol is generated if you specify the implementation technology in CML
+
+
