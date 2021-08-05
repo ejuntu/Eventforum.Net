@@ -1,12 +1,12 @@
-// Generated from DDD Context Map 'null' at 05.08.2021 14:41:40 EEST.
+// Generated from DDD Context Map 'null' at 05.08.2021 15:36:28 EEST.
 API description ForumContextAPI
 
 
-data type DateTime P // the type DateTime has not been specified or does not contain any attributes in CML
 data type Message { "messageId":D<string>, "messageText":D<string>, "forumId":D<string>, "userId":D<string> }
-data type MessageEvent { "createDate":DateTime, "eventId":D<string>, "message":Message }
+data type MessageEvent { "createDate":D<string>, "eventId":D<string>, "message":Message }
 data type User { "userId":D<string>, "firstName":D<string>, "lastName":D<string>, "nickname":D<string>, "active":D<bool> }
-data type UserEvent { "createDate":DateTime, "id":D<string>, "user":User }
+data type UserDTO P // the type UserDTO has not been specified or does not contain any attributes in CML
+data type UserEvent { "createDate":D<string>, "id":D<string>, "user":UserDTO }
 
 
 endpoint type Messaging
@@ -35,23 +35,26 @@ endpoint type ForumUsers
 	exposes
 		operation UserCreatedEvent
 			expecting
-				payload User
+				payload D<void>
 			delivering
-				payload UserEvent
+				payload UserDTO
 		operation UserAddedEvent
 			expecting
-				payload User
+				payload D<void>
 			delivering
-				payload UserEvent
+				payload UserDTO
+		operation reset
+			expecting
+				payload D<void>
 
 
 API provider ForumContextProvider
 	// This Bounded Context manages the Chat Forum content
 	offers Messaging
 	at endpoint location "http://localhost:8001"
-		via protocol "tbd" // The protocol is generated if you specify the implementation technology in CML
+		via protocol "HTTP" // The protocol is generated if you specify the implementation technology in CML
 	offers ForumUsers
 	at endpoint location "http://localhost:8002"
-		via protocol "tbd" // The protocol is generated if you specify the implementation technology in CML
+		via protocol "HTTP" // The protocol is generated if you specify the implementation technology in CML
 
 
