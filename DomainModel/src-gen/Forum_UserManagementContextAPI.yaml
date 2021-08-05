@@ -1,0 +1,141 @@
+openapi: 3.0.1
+info:
+  title: UserManagementContextAPI
+  version: "1.0"
+servers:
+- url: http://localhost:8000
+tags:
+- name: UserManagementContextProvider-UserHome
+  externalDocs:
+    description: The role of this endpoint, offering a SystemUser contract, is not
+      specified.
+    url: ""
+paths:
+  /:
+    post:
+      tags:
+      - UserManagementContextProvider-UserHome
+      description: unspecified operation responsibility
+      operationId: UserHome-AddUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: AddUser successful execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      tags:
+      - UserManagementContextProvider-UserHome
+      description: unspecified operation responsibility
+      operationId: UserHome-Delete
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: firstName
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: lastName
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: nickname
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: active
+        in: query
+        required: true
+        schema:
+          type: boolean
+      responses:
+        "200":
+          description: Delete successful execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /UserCreatedChannel:
+    post:
+      tags:
+      - UserCreatedChannel
+      description: unspecified operation responsibility
+      operationId: UserCreatedEvent
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: UserCreatedEvent successful execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEvent'
+  /UserUpdatedChannel:
+    post:
+      tags:
+      - UserUpdatedChannel
+      description: unspecified operation responsibility
+      operationId: UserUpdatedEvent
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "200":
+          description: UserUpdatedEvent successful execution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEvent'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        userId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        nickname:
+          type: string
+        active:
+          type: boolean
+    UserDTO:
+      type: object
+      properties:
+        userId:
+          type: string
+        nickname:
+          type: string
+        active:
+          type: boolean
+    UserEvent:
+      type: object
+      properties:
+        createDate:
+          type: string
+        id:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserDTO'

@@ -1,9 +1,9 @@
-// Generated from DDD Context Map 'null' at 05.08.2021 15:36:28 EEST.
+// Generated from DDD Context Map 'null' at 05.08.2021 16:07:31 EEST.
 API description UserManagementContextAPI
 
 
 data type User { "userId":D<string>, "firstName":D<string>, "lastName":D<string>, "nickname":D<string>, "active":D<bool> }
-data type UserDTO P // the type UserDTO has not been specified or does not contain any attributes in CML
+data type UserDTO { "userId":D<string>, "nickname":D<string>, "active":D<bool> }
 data type UserEvent { "createDate":D<string>, "id":D<string>, "user":UserDTO }
 
 
@@ -13,17 +13,23 @@ endpoint type SystemUser
 			expecting
 				payload User
 			delivering
-				payload D<string>
-		operation updateUser
+				payload User
+		operation Delete
 			expecting
 				payload User
 			delivering
 				payload User
+
+endpoint type UserCreatedChannel
+	exposes
 		operation UserCreatedEvent
 			expecting
 				payload User
 			delivering
 				payload UserEvent
+				
+endpoint type UserUpdatedChannel
+	exposes
 		operation UserUpdatedEvent
 			expecting
 				payload User
@@ -35,6 +41,20 @@ API provider UserManagementContextProvider
 	// This Bounded Context manages the user information
 	offers SystemUser
 	at endpoint location "http://localhost:8000"
-		via protocol "HTTP" // The protocol is generated if you specify the implementation technology in CML
+		via protocol HTTP		
+			binding 
+			resource UserHome at "/"
+				operation Delete to DELETE
+				operation AddUser to POST
+			
 
-
+API provider UserCreatedChannelProvider
+	offers UserCreatedChannel
+	at endpoint location "tbd"
+	via protocol gRPC	
+	
+API provider UserUpdatedChannelProvider
+	offers UserCreatedChannel
+	at endpoint location "tbd"
+	via protocol gRPC	
+			
