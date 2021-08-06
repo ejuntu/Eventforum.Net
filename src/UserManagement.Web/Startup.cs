@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace EventForum
+namespace UserManagement.Web
 {
     public class Startup
     {
@@ -28,7 +28,7 @@ namespace EventForum
         {
 
             services.AddControllers();
-            services.AddOpenApiDocument(settings => { settings.Title = "EventForum Forum API";}
+            services.AddOpenApiDocument(settings => { settings.Title = "EventForum User Management API"; }
             );
         }
 
