@@ -36,7 +36,7 @@ BoundedContext ForumContext implements ForumDomain {
 		}
 		Service MessageService {
 			String Add (@Message message); // Returns message Id GUID as string
-			@Message Update (@Message message);
+			@Message Delete (@Message message);
 		}
 		Service MessageEventService {
 			@MessageEvent MessageAdded(@Message message)
